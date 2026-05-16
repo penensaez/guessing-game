@@ -1,4 +1,7 @@
-import streamlit as st
+try:
+    import streamlit as st
+except Exception as e:
+    raise ImportError("streamlit is required to run this app. Install it with: pip install streamlit") from e
 import random
 
 MAX_ATTEMPTS = 7
@@ -16,6 +19,8 @@ if "hint" not in st.session_state:
     st.session_state.hint = ""
 if "high_score" not in st.session_state:
     st.session_state.high_score = None
+if "guess_history" not in st.session_state:
+    st.session_state.guess_history = []
 
 st.title("Number Guessing Game")
 
@@ -31,6 +36,14 @@ if st.session_state.game_over:
         st.success(st.session_state.hint)
     else:
         st.error(st.session_state.hint)
+    
+    # Show final guess history
+
+    if st.session.state_state.guess_history:
+        st.write("### Guess history:")
+        for g, r in reversed(st.session_state.guess_history):
+            st.write(f"- **{g}** → {r}")
+
     if st.button("Play Again"):
         st.session_state.secret_number = random.randint(1, 100)
         st.session_state.attempts = 0
@@ -66,8 +79,16 @@ else:
             else:
                 st.session_state.hint = f"You got it in {attempts} attempt(s)! Best is still {st.session_state.high_score}."
 
+        st.session_state.guess_history.append((guess, result))
+
         if not st.session_state.won and attempts >= MAX_ATTEMPTS:
             st.session_state.game_over = True
             st.session_state.hint = f"Out of guesses! The number was {st.session_state.secret_number}."
 
         st.rerun()
+
+    # Show guess history during active game
+    if st.session_state.guess_history:
+        st.write("### Your guesses so far:")
+        for g, r in reversed(st.session_state.guess_history):
+            st.write(f"- **{g}** → {r}")
