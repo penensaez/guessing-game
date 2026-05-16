@@ -67,10 +67,13 @@ else:
         attempts = st.session_state.attempts
 
         if guess < st.session_state.secret_number:
+            result = "Too low ⬆️"
             st.session_state.hint = f"Too low! ({attempts} attempt(s) used)"
         elif guess > st.session_state.secret_number:
+            result = "Too high ⬇️"
             st.session_state.hint = f"Too high! ({attempts} attempt(s) used)"
         else:
+            result = "Correct! 🎉"
             st.session_state.won = True
             st.session_state.game_over = True
             if st.session_state.high_score is None or attempts < st.session_state.high_score:
